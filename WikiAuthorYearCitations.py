@@ -93,7 +93,8 @@ inputfile = sys.argv[1]
 
 # Check if the output file is given, if not use stdout
 if len(sys.argv)<3:
-    outpufile = sys.stdout
+    outputfile = sys.stdout
+    outputfilename=""
 else:
     outputfilename = sys.argv[2]
 
@@ -104,39 +105,42 @@ else:
         if answer!='y':
             print("Exit")
             sys.exit(-1)
+    outputfile = open(outputfilename, 'w')
 
 # Read the wikimedia formatted refereces which are for example
 # Exported from Zotero
 with open(inputfile, 'r') as fid:
         wikirefs=fid.readlines()
 
-with open(outputfilename, 'w') as outputfile:
-    outputfile.write("<references>\n")
-    # Process each one of them, and produce a nice citaion key
-    for refraw in wikirefs:
-        # Remove braces and trailing and leading spaces
-        ref = refraw.replace('{', '').replace('}','').strip()
-        try:
-            # Parse citation information
-            lastname = getLastname(ref)
-            year = getYear(ref)
-            title = getTitle(ref)
-            key= makeUniqueKey(lastname, year, title)
-        except Exception as e:
-            # if something goes wrong, break
-            print (e)
-            print (lastname, year)
-            print(ref)
-            break
-        else:
-            # It worked, we have a key, unless the entry was a duplicate
-            if len(key):
-                # No dupliate, print it
-                outputfile.write("<ref name=%s>%s</ref>\n" % (key, ref))
-            else:
-                # It was a duplicate, skip it
-                pass
-                #print("Duplicate %s, %s, %s" % (lastname, year, title))
 
-        #print(UsedKeys.keys())
-    outputfile.write("</references>\n")
+outputfile.write("<references>\n")
+# Process each one of them, and produce a nice citaion key
+for refraw in wikirefs:
+    # Remove braces and trailing and leading spaces
+    ref = refraw.replace('{', '').replace('}','').strip()
+    try:
+        # Parse citation information
+        lastname = getLastname(ref)
+        year = getYear(ref)
+        title = getTitle(ref)
+        key= makeUniqueKey(lastname, year, title)
+    except Exception as e:
+        # if something goes wrong, break
+        print (e)
+        print (lastname, year)
+        print(ref)
+        break
+    else:
+        # It worked, we have a key, unless the entry was a duplicate
+        if len(key):
+            # No dupliate, print it
+            outputfile.write("<ref name=%s>%s</ref>\n" % (key, refraw))
+        else:
+            # It was a duplicate, skip it
+            pass
+            #print("Duplicate %s, %s, %s" % (lastname, year, title))
+
+    #print(UsedKeys.keys())
+outputfile.write("</references>\n")
+if len(outputfilename)>0:
+    outputfile.close()
