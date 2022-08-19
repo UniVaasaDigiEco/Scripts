@@ -1,7 +1,7 @@
 #!/usr/bin/python 
 
 """
-  This script reds the citations in Wikimedia format, and 
+  This script reads the citations in Wikimedia format, and 
   produces a handy citation key for each of the references
   in order to have easy named citations from Wiki text.
   
